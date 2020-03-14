@@ -3,12 +3,14 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render
 from .models import Number
 
+import json
+
 
 def index(request):
     return render(request, 'tracker/index.html')
 
 
-def track_or_increment_number(request, number_to_track, increment_by):
+def track_or_increment_number_helper(request, number_to_track, increment_by):
 
     if Number.objects.filter(value=number_to_track):
         number = Number.objects.get(value=number_to_track)
@@ -28,27 +30,32 @@ def track_or_increment_number(request, number_to_track, increment_by):
             return render(request, 'tracker/track_or_increment.html', {'number': added_number})
 
 
+def get_request_attribute(request, attribute):
+    if request.content_type == "application/json":
+        body = json.loads(request.body.decode("utf-8"))
+        return body.get(attribute)
+    elif request.content_type == "application/x-www-form-urlencoded" or request.content_type == "text/plain":
+        if request.method == "POST":
+            return request.POST.get(attribute)
+        elif request.method == "PUT":
+            return request.PUT.get(attribute)
+        ### To handle cases when responses are sent through an html form,
+        ### since html forms do not support PUT as a method type, it's sent as a GET request instead
+        elif request.method == "GET":
+            return request.GET.get(attribute)
+
+
 def track_or_increment(request):
-    number_to_track = None
-    increment_by = None
+    number_to_track = get_request_attribute(request, "number")
+    increment_by = get_request_attribute(request, "increment_value")
 
-    if request.method == "POST":
-        number_to_track = request.POST.get('number')
-    elif request.method == "PUT":
-        number_to_track = request.PUT.get('number')
-        increment_by = request.PUT.get('increment_value')
-
-    ### To handle cases when responses are sent through an html form,
-    ### since html forms do not support PUT as a method type, it's sent as a GET request instead
-    elif request.method == "GET":
-        number_to_track = request.GET.get('number')
-        increment_by = int(request.GET.get('increment_value'))
-
-    if increment_by is not None and increment_by < 1:
-        return HttpResponseBadRequest("Increment amount must be greater than zero")
+    if increment_by is not None:
+        increment_by = int(increment_by)
+        if increment_by < 1:
+            return HttpResponseBadRequest("Increment amount must be greater than zero")
 
     if number_to_track:
-        return track_or_increment_number(request, number_to_track, increment_by)
+        return track_or_increment_number_helper(request, number_to_track, increment_by)
     else:
         return HttpResponseBadRequest("Request is missing number attribute")
 
