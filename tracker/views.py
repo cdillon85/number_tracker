@@ -1,4 +1,5 @@
-from django.http import HttpResponse, HttpResponseBadRequest
+
+from django.http import HttpResponseBadRequest, JsonResponse
 
 from django.shortcuts import render
 from .models import Number
@@ -19,7 +20,12 @@ def track_or_increment_number_helper(request, number_to_track, increment_by):
         else:
             number.incrementCount(1)
         number.save()
-        return render(request, 'tracker/track_or_increment.html', {'number': number})
+
+        if request.content_type == 'application/json':
+            response = {'number': str(number.value), 'count': str(number.count)}
+            return JsonResponse(response, content_type='application/json')
+        else:
+            return render(request, 'tracker/track_or_increment.html', {'number': number})
 
     else:
         if increment_by:
@@ -27,7 +33,12 @@ def track_or_increment_number_helper(request, number_to_track, increment_by):
         else:
             added_number = Number.objects.create(value=number_to_track)
             added_number.save()
-            return render(request, 'tracker/track_or_increment.html', {'number': added_number})
+
+            if request.content_type == 'application/json':
+                response = {'number': str(added_number.value), 'count': str(added_number.count)}
+                return JsonResponse(response, content_type='application/json')
+            else:
+                return render(request, 'tracker/track_or_increment.html', {'number': added_number})
 
 
 def get_request_attribute(request, attribute):
@@ -62,15 +73,25 @@ def track_or_increment(request):
 
 def get_all_numbers(request):
     all_numbers = Number.objects.all()
-    return render(request, 'tracker/get_all_numbers.html', {'all_numbers': all_numbers})
+    if request.content_type == "application/json":
+        numbers_array = []
+        for number in all_numbers:
+            numbers_array.append({'number': number.value, 'count': number.count})
+        response = {'all_numbers': numbers_array}
+
+        return JsonResponse(response, content_type="application/json")
+    else:
+        return render(request, 'tracker/get_all_numbers.html', {'all_numbers': all_numbers})
 
 
 def delete(request, number):
-
     number_to_delete = Number.objects.filter(value=number)
 
     if number_to_delete:
        number_to_delete.delete()
-       return render(request, 'tracker/delete.html', {'number': number})
+       if request.content_type == "application/json":
+           return JsonResponse({'message': f"Deleted number {number}"}, content_type="application/json")
+       else:
+            return render(request, 'tracker/delete.html', {'number': number})
     else:
         return HttpResponseBadRequest(f"Cannot delete the number {number}, it has not been tracked yet")
