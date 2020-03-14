@@ -5,9 +5,8 @@
     <title>Easy Number Tracker (ENT)</title>
 </head>
 <body>
-
+{% if all_numbers %}
 <h1>Here are all the numbers you have tracked so far:</h1>
-
 <table>
     <tr>
         <th>Number</th>
@@ -26,11 +25,16 @@
     </tr>
     {% endfor %}
 </table>
-
 <h3>Want to track another number?</h3>
 <form action="{% url 'index'%}" method="get">
     <button type="submit">Track another number</button>
 </form>
-
+{% else %}
+<h1>Looks like you haven't tracked any numbers yet</h1>
+<h3>Let's start tracking numbers!</h3>
+<form action="{% url 'index'%}" method="get">
+    <button type="submit">Track a number</button>
+</form>
+{% endif %}
 </body>
 </html>

@@ -59,5 +59,11 @@ def get_all_numbers(request):
 
 
 def delete(request, number):
-    Number.objects.filter(value=number).delete()
-    return render(request, 'tracker/delete.html', {'number': number})
+
+    number_to_delete = Number.objects.filter(value=number)
+
+    if number_to_delete:
+       number_to_delete.delete()
+       return render(request, 'tracker/delete.html', {'number': number})
+    else:
+        return HttpResponseBadRequest(f"Cannot delete the number {number}, it has not been tracked yet")
