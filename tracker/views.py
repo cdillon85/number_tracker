@@ -54,7 +54,10 @@ def track_or_increment(request):
 
 
 def get_all_numbers(request):
-    return HttpResponse("Here's all the numbers you have tracked so far.")
+    all_numbers = Number.objects.all()
+    return render(request, 'tracker/get_all_numbers.html', {'all_numbers': all_numbers})
+
 
 def delete(request, number):
-    return HttpResponse(f"You deleted the number {number}")
+    Number.objects.filter(value=number).delete()
+    return render(request, 'tracker/delete.html', {'number': number})

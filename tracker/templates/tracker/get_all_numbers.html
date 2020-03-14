@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Easy Number Tracker (ENT)</title>
+</head>
+<body>
+
+<h1>Here are all the numbers you have tracked so far:</h1>
+
+<table>
+    <tr>
+        <th>Number</th>
+        <th>Count</th>
+        <th>Delete this number?</th>
+    </tr>
+    {% for number in all_numbers %}
+    <tr>
+        <td>{{number.value}}</td>
+        <td>{{number.count}}</td>
+        <td>
+            <form action="{% url 'delete' number.value %}" method="get">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3>Want to track another number?</h3>
+<form action="{% url 'index'%}" method="get">
+    <button type="submit">Track another number</button>
+</form>
+
+</body>
+</html>
