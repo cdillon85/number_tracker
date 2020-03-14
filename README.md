@@ -2,7 +2,7 @@
 
 This is a simple app designed to track the numbers you provide it.
 
-You can run ENT's code locally using the command `python manage.py runserver` or you can download a docker image from `cdillon85/numbertracker` and run it via a docker container.
+You can run ENT's code locally using the command `python manage.py runserver` or you can download a docker image from `cdillon85/numbertracker` and run it via a docker container with the following command `docker run -p <desired port>:8000 cdillon85/numbertracker`.
 
 There is a simple UI through which you can interact with ENT, but if you want to play around with its api you can submit the following types of requests:
 
