@@ -8,17 +8,18 @@
 <h1>Welcome to the Easy Number Tracker (ENT)</h1>
 
 <h3>Add a number below and ENT will keep track of how many times you've added it</h3>
-<form action="{% url 'track_or_increment_number'%}" method="post">
+<form action="{% url 'track_or_increment'%}" method="POST">
         {% csrf_token %}
-    <input type="text" placeholder="Add a number">
+    <input type="text" placeholder="Add number" name="number"/>
     <input type="submit" value="Track"/>
 </form>
 
 <h3>Or, you can update a specific number's tracking count by a specific amount</h3>
-<form action="{% url 'track_or_increment_number'%}" method="put">
-    <input type="text" placeholder="Number to update">
+<form action="{% url 'track_or_increment'%}" method="PUT">
+            {% csrf_token %}
+    <input type="text" placeholder="Number to update" name="number">
     <br/>
-    <input type="text" placeholder="Increment count by">
+    <input type="text" placeholder="Increment count by" name="increment_value">
     <br/>
     <input type="submit" value="Update Count"/>
 </form>

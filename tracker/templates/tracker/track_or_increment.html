@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Easy Number Tracker (ENT)</title>
+</head>
+<body>
+
+<h1>You added the number {{number.value}}!</h1>
+<h3>This number has been tracked {{number.count}} time(s) so far</h3>
+
+<h3>Want to see all the numbers you've already tracked?</h3>
+<form action="{% url 'get_all_numbers'%}" method="get">
+    <button type="submit">See all numbers</button>
+</form>
+
+<h3>Want to track another number?</h3>
+<form action="{% url 'index'%}" method="get">
+    <button type="submit">Track another number</button>
+</form>
+
+</body>
+</html>
