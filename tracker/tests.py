@@ -24,7 +24,10 @@ class TrackOrIncrementView(TestCase):
         data = {'number': '2'}
         response = self.client.post(reverse('track_or_increment'), data, content_type='application/json')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "You added the number 2")
+        self.assertJSONEqual(
+            str(response.content, encoding='utf8'),
+            {'number': '2', 'count': '1'}
+        )
 
     def test_increment_number_json(self):
         number = Number(value=3)
@@ -33,8 +36,10 @@ class TrackOrIncrementView(TestCase):
         data = {'number': '3', 'increment_value': '10'}
         response = self.client.put(reverse('track_or_increment'), data, content_type='application/json')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "This number has been tracked 11 time(s) so far")
-
+        self.assertJSONEqual(
+            str(response.content, encoding='utf8'),
+            {'number': '3', 'count': '11'}
+        )
     def test_track_new_number_json_no_number_attribute(self):
         data = {}
         response = self.client.post(reverse('track_or_increment'), data, content_type='application/json')
